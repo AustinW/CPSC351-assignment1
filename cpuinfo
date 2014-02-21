@@ -1,0 +1,22 @@
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 23
+model name      : Intel(R) Xeon(R) CPU           E5430  @ 2.66GHz
+stepping        : 10
+microcode       : 0xa07
+cpu MHz         : 2660.000
+cache size      : 6144 KB
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 13
+wp              : yes
+flags           : fpu tsc msr pae mce cx8 mca cmov pat pse36 clflush dts mmx fxs
+r sse sse2 ss ht pbe syscall nx lm constant_tsc arch_perfmon pebs bts rep_good n
+opl pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm dca sse4_1 lahf_l
+m dtherm tpr_shadow vnmi flexpriority
+bogomips        : 5320.00
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 38 bits physical, 48 bits virtual
+power management:
