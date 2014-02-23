@@ -10,6 +10,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
+#include <time.h>
+#include <unistd.h>
+
+using namespace std;
 
 struct Reader {
     char *line;
@@ -141,9 +146,32 @@ int main(int argc, char *argv[]) {
         delete(r);
         fclose(processor_file_pointer);
         fclose(kernel_file_pointer);
+    
     // Version 2 of program
     } else if (argc == 3) {
-        
+        int read_rate = stoi(argv[1]);
+        int printout_rate = stoi(argv[2]);
+
+        time_t init_clock = time(NULL),
+               running_time;
+
+        while (true) {
+
+            running_time = time(NULL);
+            // read in values
+            cout << "Reading..." << endl;
+            //printf("Time taken: %.2fs\n", (double)(clock() - running_time)/CLOCKS_PER_SEC);
+            cout << "Init: " << init_clock << " Running: " << running_time << endl;
+
+
+            if ((running_time - init_clock) >= printout_rate) {
+                init_clock = time(NULL);
+                cout << "Printing..." << endl;
+            }
+
+
+            sleep(read_rate);
+        }
     }
     
     return 0;
