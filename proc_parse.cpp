@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
 
 struct Reader {
     char *line;
@@ -115,7 +116,7 @@ int main(int argc, char *argv[]) {
         FILE *uptime_file_pointer = fopen("/proc/uptime", "r");
         // FILE *uptime_file_pointer = fopen("uptime", "r");
         
-        struct Reader *r = malloc(sizeof(struct Reader));
+        Reader *r = new Reader();
         
         if (processor_file_pointer)
             print_processor_info(processor_file_pointer, reset_reader(r));
@@ -137,7 +138,7 @@ int main(int argc, char *argv[]) {
         else
             fprintf(stderr, "ERROR: Could not access up-time information\n");
         
-        free(r);
+        delete(r);
         fclose(processor_file_pointer);
         fclose(kernel_file_pointer);
     // Version 2 of program
