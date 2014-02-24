@@ -11,8 +11,12 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <time.h>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
+
+#include "CPUTracker.h"
+#include "MemTracker.h"
 
 using namespace std;
 
@@ -149,31 +153,33 @@ int main(int argc, char *argv[]) {
     
     // Version 2 of program
     } else if (argc == 3) {
+        
         int read_rate = stoi(argv[1]);
         int printout_rate = stoi(argv[2]);
+        int seconds = 0;
+        int calculations;
 
-        time_t init_clock = time(NULL),
-               running_time;
+        CPUTracker *cpuTracker = new CPUTracker();
+        MemTracker *memTracker = new MemTracker();
 
         while (true) {
 
-            running_time = time(NULL);
-            // read in values
-            cout << "Reading..." << endl;
-            //printf("Time taken: %.2fs\n", (double)(clock() - running_time)/CLOCKS_PER_SEC);
-            cout << "Init: " << init_clock << " Running: " << running_time << endl;
+            if (seconds && seconds % read_rate == 0) {
 
+                cpuTracker->calculate("/proc/stat");
+                memTracker->calculate("/proc/meminfo");
 
-            if ((running_time - init_clock) >= printout_rate) {
-                init_clock = time(NULL);
-                cout << "Printing..." << endl;
             }
 
+            if (seconds && seconds % printout_rate == 0) {
+                cpuTracker->print();
+                memTracker->print();
+            }
 
-            sleep(read_rate);
+            ++seconds;
+            sleep(1);
         }
     }
     
     return 0;
-    
 }
