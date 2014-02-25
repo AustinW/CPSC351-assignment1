@@ -1,5 +1,7 @@
 #include "CmdHandler.h"
 #include <string.h>
+#include <stdlib.h>
+#include <iostream>
 
 CmdHandler::CmdHandler() {
 	
@@ -48,12 +50,14 @@ int CmdHandler::parse(char input[MAXLINE]) {
 		strcpy(this->commands[count++], token);
 	}
 
+	this->num_commands = count;
+
 	return count;
 }
 
-void CmdHandler::parseCommands(char *command, char *name, char *arg_v[MAX_ARG_NUM]) {
+int CmdHandler::parseCommands(char *name, char *arg_v[MAX_ARG_NUM]) {
 	char localCopy[MAXLINE];
-	strcpy(localCopy, command);
+	strcpy(localCopy, this->commands[0]);
 
 	char *pointer = localCopy,
 		 *restOfInput,
@@ -72,3 +76,5 @@ void CmdHandler::parseCommands(char *command, char *name, char *arg_v[MAX_ARG_NU
 	return count;
 
 }
+
+int CmdHandler::getNumCommands() { return this->num_commands; }
