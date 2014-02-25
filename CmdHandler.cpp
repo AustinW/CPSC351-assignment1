@@ -50,3 +50,25 @@ int CmdHandler::parse(char input[MAXLINE]) {
 
 	return count;
 }
+
+void CmdHandler::parseCommands(char *command, char *name, char *arg_v[MAX_ARG_NUM]) {
+	char localCopy[MAXLINE];
+	strcpy(localCopy, command);
+
+	char *pointer = localCopy,
+		 *restOfInput,
+		 *token;
+
+	int count = 0;
+
+	while (token = strtok_r(pointer, "\t' ", &restOfInput)) {
+		arg_v[count] = (char *)malloc(strlen(token)*sizeof(char));
+		strcpy(arg_v[count++], token);
+		pointer = restOfInput;
+	}
+
+	strcpy(name, arg_v[0]);
+	arg_v[count] = NULL;
+	return count;
+
+}

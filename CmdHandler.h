@@ -13,6 +13,8 @@ public:
 	static void deleteBgChar(char *);
 
 	int parse(char input[MAXLINE]);
+	int parseCommands(char *, char *, char *arg_v[MAX_ARG_NUM]);
+
 	char commands[MAX_CMD_NUM][MAXLINE];
 
 private:
