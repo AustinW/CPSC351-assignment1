@@ -1,1 +1,8 @@
-Run Command: gcc proc_parse.cpp CPUTracker.cpp MemTracker.cpp -o proc_parse -lstdc++ -std=c++11
+Instructions
+------------
+Run the following command:
+$ make
+
+Executables generated:
+proc_parse (part one)
+my_shell (part two)
