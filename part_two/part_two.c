@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +7,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
-
 #define MAXLINE 1024    // Maximum length of a command
 #define MAX_CMD_NUM 8   // Max number of commands in a pipeline
 #define MAX_ARG_NUM 64  // Max number of arguments for each command
@@ -54,7 +52,7 @@ void delete_bg_character(char *instr);
 
 int is_pipe_bg(char *userinput);
 
-void sigchild_handler(int signum);
+void child_handler();
 
 void waitfg(struct job_t *pjob);
 //Helper routines
@@ -71,34 +69,24 @@ int pid2jid(pid_t pid);
 void listjobs(struct job_t *jobs);
 
 void sigint_handler(int signum)
-{
-    //stop current fg program
+{//stop current fg program
     
 }
 void sigtstp_handler(int signum)
-{
-    //suspend current fg
+{//suspend current fg
 
 }
-void sigchild_handler(int signum)
-{
-    //
-}
-
-
 int main()
 {
-
     signal(SIGINT,  sigint_handler);   /* ctrl-c */
     signal(SIGTSTP, sigtstp_handler);  /* ctrl-z */
-    signal(SIGCHLD, sigchild_handler);
+    signal(SIGCHLD, child_handler);
 
-    while (1)
-    {
+while (1) {
         char cmdline[MAXLINE];
         /* Read command line */
         fflush(stdout);
-        printf("CPSC 351 $ ");
+        printf("CSC2/456Shell$ ");
 
         if ((fgets(cmdline, MAXLINE, stdin) == NULL))
             printf("error\n");
@@ -106,7 +94,7 @@ int main()
         int cnt_pipe_bg = 0;
         cnt_pipe_bg = is_pipe_bg(cmdline);
     
-        if (cnt_pipe_bg){
+        if(cnt_pipe_bg){
             delete_bg_character(cmdline);
         }
         /* Parse user input */
@@ -115,45 +103,44 @@ int main()
        
         /* Evaluate the command line */
         /* Spawn child process to execute command*/
-        if (strncmp(cmds[0], "exit", strlen("exit")) == 0){
+        if(strncmp(cmds[0],"exit",strlen("exit")) == 0){
             //exit shell
             printf("Exit shell!\n");
             exit(0);
-        } else if (strncmp(cmds[0], "cd", strlen("cd")) == 0){
+        }else if(strncmp(cmds[0],"cd",strlen("cd")) == 0){
             //change current working directory
             char name[MAX_ARG_LENGTH];
             char *arg_v[MAX_ARG_NUM];
-            parse_cmds(cmds[0], name, arg_v);
+            parse_cmds(cmds[0],name,arg_v);
             chdir(arg_v[1]);
             continue;
-        } else if (strncmp(cmds[0], "fg", strlen("fg")) == 0){
+        }else if(strncmp(cmds[0],"fg",strlen("fg")) == 0){
             char name[MAX_ARG_LENGTH];
             char *arg_v[MAX_ARG_NUM];
-            parse_cmds(cmds[0], name, arg_v);
+            parse_cmds(cmds[0],name,arg_v);
             //TODO 
             //use jobid to find thread id and bring up process to foreground;
             struct job_t *pcnt_job;
             int jid = atoi(arg_v[1]);
-            pcnt_job = getjobjid(jobs, jid);
+            pcnt_job = getjobjid(jobs,jid);
             #ifdef DEBUG
-                printf("find job %d, with pid:%d\n", jid, pcnt_job->pid);
+                printf("find job %d, with pid:%d\n",jid,pcnt_job->pid);
             #endif
             waitfg(pcnt_job);
             continue;
-        } else if (strncmp(cmds[0], "bg", strlen("bg")) == 0){
+        }else if(strncmp(cmds[0],"bg",strlen("bg")) == 0){
             continue;
-        } else if (strncmp(cmds[0], "jobs", strlen("jobs")) == 0){
+        }else if(strncmp(cmds[0],"jobs",strlen("jobs")) == 0){
             //show jobs status
             listjobs(jobs);
         continue;
         }
         else{
-            // printf("command: %s\n", cmds[0]);
             eval_cmd();
         //set up groupid int the above eval_cmd() function
         }
         
-        if (cnt_pipe_bg){
+        if(cnt_pipe_bg){
             //TODO
             //wait for all jobs that is in background???
             //addthing to list 
@@ -167,28 +154,26 @@ int main()
             continue;
         }
         else{
-            addjob(jobs, child_pids[0], FG, cmdline);
-            
-            int i;
-            for (i=0; i<num_cmds; i++) {
-                waitpid(child_pids[i], &child_status[i], 0);
-            }
+        addjob(jobs,child_pids[0],FG,cmdline);
+        int i;
+        for(i=0;i<num_cmds;i++){
+            waitpid(child_pids[i],&child_status[i],0);
         }
-    }
+        }
+    } 
     return 0;
 }
-void delete_bg_character(char *instr) {
-    int i = 0;
-    for(i = strlen(instr) - 1; i >= 0; i--){
-        
+void delete_bg_character(char *instr){
+    int i=0;
+    for(i=strlen(instr)-1;i>=0;i--){
         char c = instr[i];
-        if (c == '&') {
+        if(c == '&'){
             instr[i] = ' ';
             break;
         }
     }
 }
-int is_pipe_bg(char *userinput) {
+int is_pipe_bg(char *userinput){
     int i=0;
     for(i=strlen(userinput)-1;i>=0;i--){
         char c = userinput[i];
@@ -259,7 +244,6 @@ void eval_cmd()
             char name[MAX_ARG_LENGTH];
             char *arg_v[MAX_ARG_NUM];
             int n_arg;
-            // printf("command: %s", name);
             n_arg = parse_cmds(cmds[i],name,arg_v);       
             execvp(name,arg_v);
         }else{
@@ -281,7 +265,6 @@ int parse_cmds(char *cmd, char *name, char *arg_v[MAX_ARG_NUM])
     
     int count = 0;
     while(token = strtok_r(ptr,"\t' ",&rest) ){
-        printf("%s", (char *)malloc(strlen(token)*sizeof(char)));
          arg_v[count] = (char *)malloc(strlen(token)*sizeof(char));
          strcpy(arg_v[count++],token);
          ptr = rest;
